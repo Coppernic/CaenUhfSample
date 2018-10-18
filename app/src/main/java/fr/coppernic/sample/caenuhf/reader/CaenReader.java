@@ -20,19 +20,15 @@ import timber.log.Timber;
 
 public class CaenReader implements Reader {
 
-    private final Context context;
-
     private static final String CAEN_READER_PORT = "/dev/ttyHSL1";
     private Reader.Listener listener;
 
     private CAENRFIDReader reader;
-    CAENRFIDLogicalSource source;
     private Settings settings;
     private boolean isConnected = false;
 
     public CaenReader(Context context, final Listener listener) {
         this.listener = listener;
-        this.context = context;
         if (reader == null) {
             CAENRFIDReader.getInstance(context, new OnGetReaderInstanceListener() {
                 @Override
@@ -93,7 +89,7 @@ public class CaenReader implements Reader {
                 Timber.d("Exception stop inventory : " + e.getMessage());
             }
             Timber.d("Start inventory");
-            source = reader.GetSource("Source_0");
+            CAENRFIDLogicalSource source = reader.GetSource("Source_0");
             source.SetReadCycle(0);
             reader.addCAENRFIDEventListener(caenrfidEventListener);
             source.SetSelected_EPC_C1G2(CAENRFIDLogicalSourceConstants.EPC_C1G2_All_SELECTED);
@@ -129,13 +125,7 @@ public class CaenReader implements Reader {
             @Override
             public void run() {
                 final CpcResult.RESULT res = connect();
-
-                /*((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {*/
-                       listener.onReaderReady(res);
-                   /* }
-                });*/
+                listener.onReaderReady(res);
                 inventoryRead();
             }
         }).run();

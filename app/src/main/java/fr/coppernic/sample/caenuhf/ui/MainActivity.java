@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // startProgress();
                 if (!UHFreader.isConnected()) {
                     clearRecyclerView();
                     UHFreader.connectAndRead();
