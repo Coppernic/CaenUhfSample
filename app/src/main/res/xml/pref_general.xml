@@ -1,0 +1,32 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/uhf_reader">
+        <ListPreference
+            android:defaultValue="100"
+            android:entries="@array/uhf_power_values_list"
+            android:entryValues="@array/uhf_power_values_list"
+            android:key="key_uhf_power"
+            android:summary="@string/pref_key_uhf_power_summary"
+            android:title="@string/pref_key_uhf_power_label" />
+
+        <ListPreference
+            android:defaultValue="6"
+            android:entries="@array/uhf_q_values_list"
+            android:entryValues="@array/uhf_q_values_list"
+            android:key="key_uhf_q"
+            android:summary="@string/pref_key_uhf_q_summary"
+            android:title="@string/pref_key_uhf_q_label" />
+
+        <ListPreference
+            android:defaultValue="S0"
+            android:entries="@array/uhf_session_values_list"
+            android:entryValues="@array/uhf_session_values_list"
+            android:key="key_uhf_session"
+            android:summary="@string/pref_key_uhf_session_summary"
+            android:title="@string/pref_key_uhf_session_label" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/action_about">
+        <Preference
+            android:key="@string/pref_version"
+            android:title="Version" />
+    </PreferenceCategory>
+</PreferenceScreen>
