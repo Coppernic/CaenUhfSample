@@ -3,22 +3,22 @@ package fr.coppernic.sample.caenuhf.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.caen.RFIDLibrary.CAENRFIDNotify;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import fr.coppernic.sample.caenuhf.R;
 import fr.coppernic.sample.caenuhf.reader.Adapter;
 import fr.coppernic.sample.caenuhf.reader.CaenReader;
@@ -28,9 +28,11 @@ import fr.coppernic.sample.caenuhf.settings.SettingsActivity;
 import fr.coppernic.sdk.power.PowerManager;
 import fr.coppernic.sdk.power.api.PowerListener;
 import fr.coppernic.sdk.power.api.peripheral.Peripheral;
+import fr.coppernic.sdk.power.impl.access.AccessPeripheral;
 import fr.coppernic.sdk.power.impl.cone.ConePeripheral;
 import fr.coppernic.sdk.utils.core.CpcBytes;
 import fr.coppernic.sdk.utils.core.CpcResult;
+import fr.coppernic.sdk.utils.helpers.OsHelper;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -201,11 +203,23 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Peripheral getCaenPeripheral() {
+        if (OsHelper.isCone())
+            return ConePeripheral.RFID_CAEN_R1270C_GPIO;
+        else if (OsHelper.isAccess())
+            // TODO
+            // return AccessPeripheral.RFID_GENERIC_GPIO;
+            return AccessPeripheral.RFID_ASK_UCM108_GPIO;
+        else
+            return null;
+    }
+
     private void powerOn(boolean on) {
+        Peripheral peripheral = getCaenPeripheral();
         if (on) {
-            ConePeripheral.RFID_CAEN_R1270C_GPIO.on(this);
+            peripheral.on(this);
         } else {
-            ConePeripheral.RFID_CAEN_R1270C_GPIO.off(this);
+            peripheral.off(this);
             SystemClock.sleep(500);
         }
     }
