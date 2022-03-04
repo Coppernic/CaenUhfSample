@@ -18,7 +18,7 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId "fr.coppernic.app.template"
+        applicationId "fr.coppernic.sample.caenuhf"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode versioning.info.versionCode
