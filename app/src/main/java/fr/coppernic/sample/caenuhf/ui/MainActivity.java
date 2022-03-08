@@ -33,6 +33,8 @@ import fr.coppernic.sdk.power.impl.cone.ConePeripheral;
 import fr.coppernic.sdk.utils.core.CpcBytes;
 import fr.coppernic.sdk.utils.core.CpcResult;
 import fr.coppernic.sdk.utils.helpers.OsHelper;
+import fr.coppernic.sdk.utils.sound.Sound;
+import kotlin.Unit;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -150,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    beepFunction();
                     updateViews(tags);
                 }
             });
@@ -248,5 +251,17 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
+
+    private void beepFunction() {
+        Sound sound = new Sound(this);
+        sound.playOk(250, this::callback);
+    }
+
+    private Unit callback() {
+        //do something here
+        return Unit.INSTANCE;
+    }
+
+
 
 }
