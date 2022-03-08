@@ -15,12 +15,13 @@ import com.caen.RFIDLibrary.OnGetReaderInstanceListener;
 import java.util.ArrayList;
 
 import fr.coppernic.sample.caenuhf.settings.Settings;
+import fr.coppernic.sdk.core.Defines;
 import fr.coppernic.sdk.utils.core.CpcResult;
 import timber.log.Timber;
 
 public class CaenReader implements Reader {
 
-    private static final String CAEN_READER_PORT = "/dev/ttyHSL1";
+    private static final String CAEN_READER_PORT = Defines.SerialDefines.ASK_READER_PORT;
     private Reader.Listener listener;
 
     private CAENRFIDReader reader;
