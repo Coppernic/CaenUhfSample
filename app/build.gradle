@@ -1,60 +1,149 @@
 plugins {
     id "fr.coppernic.versioning" version "3.1.2"
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'fr.coppernic.extensions'
-
-copper {
-    projectName = "CaenUhfSample"
-
-    publications {
-        genSourcesForVariant = {false}
-        artiConfig = project.hasProperty('artiServer')?project.artiServer:"arti01"
-    }
+repositories {
+    maven { url "https://nexus.coppernic.fr/repository/libs-release" }
+    google()
+    //noinspection JcenterRepositoryObsolete
+    jcenter()
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
-
-apply plugin: 'fr.coppernic.android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 31
+
     defaultConfig {
         applicationId "fr.coppernic.sample.caenuhf"
-        minSdkVersion 17
-        targetSdkVersion 27
+        minSdkVersion 23
+        targetSdkVersion 30
         versionCode versioning.info.versionCode
         versionName versioning.info.display
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        multiDexEnabled true
+
+        useLibrary 'android.test.runner'
+        useLibrary 'android.test.base'
+        useLibrary 'android.test.mock'
     }
+
+    buildFeatures {
+        viewBinding true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    sourceSets {
+        debug.assets.srcDirs += files("$projectDir/schemas".toString())
+
+        androidTest.java.srcDirs += "src/test-common/java"
+        androidTest.res.srcDirs += "src/test-common/res"
+
+        test.java.srcDirs += "src/test-common/java"
+        test.res.srcDirs += "src/test-common/res"
+    }
+
+    // Sometimes we are including libs that contains packages that are not in Android framework
+    lintOptions {
+        warning 'InvalidPackage'
+    }
+
+    // Needs this for Robolectric 4+
+    testOptions {
+        animationsDisabled true
+
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    // Used for including libs compiled with kotlin
+    packagingOptions {
+        exclude 'META-INF/main.kotlin_module'
+        exclude 'META-INF/lib_release.kotlin_module'
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
+}
+
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+gradle.taskGraph.useFilter { task ->
+    !(task.name.startsWith("test") && task.name.contains("Release"))
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events TestLogEvent.FAILED,
+                TestLogEvent.SKIPPED
+        //TestLogEvent.STANDARD_OUT,
+        //TestLogEvent.STANDARD_ERROR
+        exceptionFormat TestExceptionFormat.FULL
+        showExceptions true
+        showCauses true
+        showStackTraces true
+
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:support-vector-drawable:27.1.1'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.0'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // Coppernic
-    implementation('fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.17.0')
-    implementation('fr.coppernic.sdk.core:CpcCore:1.6.2')
+    implementation('fr.coppernic.sdk.cpcutils:CpcUtilsLib:6.19.1')
+    implementation('fr.coppernic.sdk.core:CpcCore:2.1.1')
     implementation 'com.caen.RFIDLibrary:CaenRfidLibrary:3.0.0'
 
-    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     implementation 'com.github.d-max:spots-dialog:0.7@aar'
 
