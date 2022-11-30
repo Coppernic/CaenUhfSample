@@ -210,9 +210,7 @@ public class MainActivity extends AppCompatActivity {
         if (OsHelper.isCone())
             return ConePeripheral.RFID_CAEN_R1270C_GPIO;
         else if (OsHelper.isAccess())
-            // TODO
-            // return AccessPeripheral.RFID_GENERIC_GPIO;
-            return AccessPeripheral.RFID_ASK_UCM108_GPIO;
+            return AccessPeripheral.RFID_CAEN_R1270C_GPIO;
         else
             return null;
     }
