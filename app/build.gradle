@@ -148,3 +148,6 @@ dependencies {
     implementation 'com.github.d-max:spots-dialog:0.7@aar'
 
 }
+
+apply from: rootProject.file('gradle/sign.gradle')
+apply from: rootProject.file('gradle/publish-app.gradle')
