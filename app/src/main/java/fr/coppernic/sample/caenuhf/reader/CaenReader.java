@@ -48,7 +48,7 @@ public class CaenReader implements Reader {
             Timber.d("SetSession");
             String session = settings.getSession();
             setSession(session);
-        } catch (CAENRFIDException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return res.setCause(e);
         }
@@ -56,7 +56,7 @@ public class CaenReader implements Reader {
             int power = settings.getPower();
             Timber.d("SetPower " + power + "mW");
             reader.SetPower(power);
-        } catch (CAENRFIDException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return res.setCause(e);
         }
@@ -69,33 +69,29 @@ public class CaenReader implements Reader {
             CpcResult.RESULT res = init();
             if (res != CpcResult.RESULT.OK) {
                 Timber.d("Connection Error !!!");
-                return res;
             } else {
                 isConnected = true;
                 Timber.d("Connection OK");
-                return res;
             }
-        } catch (CAENRFIDException e) {
+            return res;
+        } catch (Exception e) {
             e.printStackTrace();
             return CpcResult.RESULT.CONNECTION_ERROR;
         }
     }
 
     private void inventoryRead() {
+        Timber.d("Start inventory");
         try {
-            try {
-                reader.removeCAENRFIDEventListener(caenrfidEventListener);
-                reader.InventoryAbort();
-            } catch (Exception e) {
-                Timber.d("Exception stop inventory : " + e.getMessage());
-            }
-            Timber.d("Start inventory");
+            reader.removeCAENRFIDEventListener(caenrfidEventListener);
+            reader.InventoryAbort();
             CAENRFIDLogicalSource source = reader.GetSource("Source_0");
             source.SetReadCycle(0);
             reader.addCAENRFIDEventListener(caenrfidEventListener);
             source.SetSelected_EPC_C1G2(CAENRFIDLogicalSourceConstants.EPC_C1G2_All_SELECTED);
             source.EventInventoryTag(new byte[0], (short) 0x0, (short) 0x0, (short) 0x06);
-        } catch (CAENRFIDException e) {
+        } catch (Exception e) {
+            Timber.d("Exception stop inventory : %s", e.getMessage());
             e.printStackTrace();
         }
 
@@ -140,7 +136,7 @@ public class CaenReader implements Reader {
             reader.removeCAENRFIDEventListener(caenrfidEventListener);
             reader.InventoryAbort();
             reader.Disconnect();
-        } catch (CAENRFIDException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         isConnected = false;

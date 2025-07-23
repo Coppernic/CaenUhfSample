@@ -5,14 +5,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import fr.coppernic.sample.caenuhf.R;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
-    private ArrayList<Tag> tags;
+    private final List<Tag> tags;
 
     // Provide a reference to the views for each data item
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -26,7 +27,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     }
 
     //Constructor
-    public Adapter(ArrayList<Tag> tags) {
+    public Adapter(List<Tag> tags) {
         this.tags = tags;
     }
 
